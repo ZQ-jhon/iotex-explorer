@@ -9,10 +9,10 @@ import { Board } from "../common/board";
 import { ModalBody } from "../common/modal-body";
 import { getAntenna } from "./get-antenna";
 import {
-  actionClearSignMsg,
   IRPCProvider,
   IWalletState,
-  SignParams
+  SignParams,
+  WsConnectType
 } from "./wallet-reducer";
 
 type Props = {
@@ -20,7 +20,7 @@ type Props = {
 } & {
   actionClearSignMsg?: Function;
   msg?: string;
-  type?: "SIGN_AND_SEND" | "GET_ACCOUNTS" | "SIGN_MSG";
+  type?: WsConnectType;
   reqId?: number;
   network?: IRPCProvider;
 };
@@ -49,7 +49,7 @@ class SignMsg extends Component<Props> {
 
   public render(): JSX.Element | null {
     const { msg, type } = this.props;
-    const visible = Boolean(type === "SIGN_MSG" && msg);
+    const visible = Boolean(type === WsConnectType.SIGN_MESSAGE && msg);
     return (
       <>
         <Modal
@@ -79,7 +79,8 @@ export const SignMsgContainer = connect(
   },
   dispatch => {
     return {
-      actionClearSignMsg: () => dispatch(actionClearSignMsg())
+      actionClearSignMsg: () =>
+        dispatch({ type: WsConnectType.CLEAR_SIGN_MESSAGE })
     };
   }
 )(SignMsg);

@@ -2,7 +2,22 @@ import { Account } from "iotex-antenna/lib/account/account";
 import { ITokenInfoDict } from "../../erc20/token";
 
 export type QueryType = "CONTRACT_INTERACT";
+export enum WsConnectType {
+  SIGN_AND_SEND = "SIGN_AND_SEND",
+  GET_ACCOUNT = "GET_ACCOUNTS",
+  SIGN_MESSAGE = "SIGN_MSG",
+  CLEAR_SIGN_MESSAGE = "CLEAR_SIGN_MSG"
+}
 
+export enum WalletActionType {
+  SET_ACCOUNT = "SET_ACCOUNT",
+  SET_NETWORK = "SET_NETWORK",
+  ADD_CUSTOM_RPC = "ADD_CUSTOM_RPC",
+  UPDATE_TOKENS = "UPDATE_TOKENS",
+  SET_LOCK_TIME = "SET_LOCK_TIME",
+  SET_ORIGIN = "SET_ORIGIN",
+  DELAY_LOCK = "DELAY_LOCK"
+}
 export type QueryParams = {
   amount?: number;
   gasPrice?: string;
@@ -22,7 +37,7 @@ type QueryParamAction = {
 
 export type SignParams = {
   reqId?: number;
-  type?: "SIGN_AND_SEND" | "GET_ACCOUNTS" | "SIGN_MSG";
+  type?: WsConnectType;
   msg?: string;
   content?: string; // message
   envelop?: string;
@@ -55,7 +70,7 @@ export const signParamsReducer = (state: {} = {}, action: SignParamAction) => {
       ...action.payload
     };
   }
-  if (action.type === "CLEAR_SIGN_MSG") {
+  if (action.type === WsConnectType.CLEAR_SIGN_MESSAGE) {
     return {
       ...state,
       type: "",
@@ -70,21 +85,8 @@ export interface IRPCProvider {
   url: string;
 }
 
-export function actionClearSignMsg(): { type: "CLEAR_SIGN_MSG" } {
-  return {
-    type: "CLEAR_SIGN_MSG"
-  };
-}
-
 export type WalletAction = {
-  type:
-    | "SET_ACCOUNT"
-    | "SET_NETWORK"
-    | "ADD_CUSTOM_RPC"
-    | "UPDATE_TOKENS"
-    | "SET_LOCK_TIME"
-    | "SET_ORIGIN"
-    | "DELAY_LOCK";
+  type: WalletActionType;
   payload: {
     account?: Account;
     hideExport?: boolean;
@@ -120,10 +122,10 @@ export const walletReducer = (
   action: WalletAction
 ) => {
   switch (action.type) {
-    case "SET_ACCOUNT":
+    case WalletActionType.SET_ACCOUNT:
       const { account, hideExport } = action.payload;
       return { ...state, account, hideExport };
-    case "ADD_CUSTOM_RPC":
+    case WalletActionType.ADD_CUSTOM_RPC:
       const { customRPC } = action.payload;
       if (!customRPC) {
         return state;
@@ -137,23 +139,23 @@ export const walletReducer = (
         ...state,
         customRPCs: [...state.customRPCs, customRPC]
       };
-    case "SET_NETWORK":
+    case WalletActionType.SET_NETWORK:
       return {
         ...state,
         network: action.payload.network,
         defaultNetworkTokens: action.payload.defaultNetworkTokens
       };
-    case "UPDATE_TOKENS":
+    case WalletActionType.UPDATE_TOKENS:
       return {
         ...state,
         tokens: action.payload.tokens
       };
-    case "SET_LOCK_TIME":
+    case WalletActionType.SET_LOCK_TIME:
       return {
         ...state,
         lockAt: action.payload.lockAt
       };
-    case "DELAY_LOCK":
+    case WalletActionType.DELAY_LOCK:
       return {
         ...state,
         isLockDelayed: action.payload.isLockDelayed

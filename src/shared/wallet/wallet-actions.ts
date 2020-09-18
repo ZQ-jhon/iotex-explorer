@@ -1,13 +1,13 @@
 import { Account } from "iotex-antenna/lib/account/account";
 import { ITokenInfoDict } from "../../erc20/token";
-import { IRPCProvider, WalletAction } from "./wallet-reducer";
+import { IRPCProvider, WalletAction, WalletActionType } from "./wallet-reducer";
 
 export const setNetwork = (
   network: IRPCProvider,
   defaultNetworkTokens: Array<string> = []
 ): WalletAction => {
   return {
-    type: "SET_NETWORK",
+    type: WalletActionType.SET_NETWORK,
     payload: {
       network,
       defaultNetworkTokens
@@ -16,7 +16,7 @@ export const setNetwork = (
 };
 
 export const addCustomRPC = (network: IRPCProvider): WalletAction => ({
-  type: "ADD_CUSTOM_RPC",
+  type: WalletActionType.ADD_CUSTOM_RPC,
   payload: {
     customRPC: network
   }
@@ -26,7 +26,7 @@ export const setAccount = (
   account?: Account,
   hideExport?: boolean
 ): WalletAction => ({
-  type: "SET_ACCOUNT",
+  type: WalletActionType.SET_ACCOUNT,
   payload: {
     account,
     hideExport
@@ -34,7 +34,7 @@ export const setAccount = (
 });
 
 export const setTokens = (tokens: ITokenInfoDict): WalletAction => ({
-  type: "UPDATE_TOKENS",
+  type: WalletActionType.UPDATE_TOKENS,
   payload: {
     tokens
   }
@@ -49,7 +49,7 @@ export const countdownToLockInMS = (
   const lockAt = after === 0 ? 0 : Date.now() + after;
 
   return {
-    type: "SET_LOCK_TIME",
+    type: WalletActionType.SET_LOCK_TIME,
     payload: {
       lockAt
     }
@@ -57,7 +57,7 @@ export const countdownToLockInMS = (
 };
 
 export const delayLock = (isLockDelayed: boolean): WalletAction => ({
-  type: "DELAY_LOCK",
+  type: WalletActionType.DELAY_LOCK,
   payload: {
     isLockDelayed
   }

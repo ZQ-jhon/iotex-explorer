@@ -755,6 +755,10 @@ class AccountSection extends React.Component<Props, State> {
 
   public renderWallet = (): JSX.Element | null => {
     const { account, dispatch } = this.props;
+    const swtichAccount = () => {
+      dispatch(setAccount());
+      window.disconnectWs();
+    };
     if (!account) {
       return null;
     }
@@ -779,7 +783,7 @@ class AccountSection extends React.Component<Props, State> {
           >
             <Col
               style={{ cursor: "pointer", fontSize: 13 }}
-              onClick={() => dispatch(setAccount())}
+              onClick={swtichAccount}
             >
               <Icon type="retweet" /> {t("account.switchAccount")}
             </Col>
