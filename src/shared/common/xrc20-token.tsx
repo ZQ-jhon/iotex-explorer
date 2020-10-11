@@ -1,3 +1,5 @@
+import Icon from "antd/lib/icon";
+import Spin from "antd/lib/spin";
 import Tag from "antd/lib/tag";
 import BigNumber from "bignumber.js";
 import { fromRau } from "iotex-antenna/lib/account/utils";
@@ -84,23 +86,38 @@ const XRC20TokenBalance: React.FC<{ contract: string; address: string }> = ({
   return <span>{balanceStr}</span>;
 };
 
-const XRC20TokenBalanceTag: React.FC<{ contract: string; address: string }> = ({
-  contract,
-  address
-}) => {
+const XRC20TokenBalanceTag: React.FC<{
+  contract: string;
+  address: string;
+  loading?: boolean;
+  done?(): void;
+  symbol?: string;
+}> = ({ contract, address, loading, done, symbol }) => {
+  const [balance, setBalance] = useState("");
   const token = Token.getToken(contract);
   token
     .getInfo(address)
     .then(info => {
-      if (info && info.symbol) {
-        setBalance(`${info.balanceString} ${info.symbol}`);
+      if (done) {
+        done();
+      }
+      if (info) {
+        setBalance(`${info.balanceString} ${info.symbol || symbol}`);
       }
     })
     .catch(() => {
+      if (done) {
+        done();
+      }
       setBalance("");
     });
-  const [balance, setBalance] = useState("");
-  return balance ? <Tag>{numberWithCommas(balance)}</Tag> : null;
+  if (loading) {
+    return <Spin indicator={<Icon type="loading" spin={true} />} />;
+  }
+  if (balance) {
+    return <Tag>{numberWithCommas(balance)}</Tag>;
+  }
+  return null;
 };
 
 const XRC20TokenValue: React.FC<{ contract: string; value: BigNumber }> = ({
